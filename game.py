@@ -1,4 +1,3 @@
-
 import pygame
 
 from classes.general_classes import XY, Color
@@ -8,6 +7,7 @@ from classes.main_text import MainText
 from classes.counter import Counter
 from classes.text import Text
 from classes.timer import Timer
+from classes.button import Button
 
 
 class Game:
@@ -15,7 +15,7 @@ class Game:
     pygame.init()
 
     self.counter = Counter()
-    self.timer = Timer()
+    self.timer = Timer(pygame.time.Clock())
     self.game_size = XY(1280, 720)
     button_size = XY(200, 60)
     button_pos = XY(self.game_size.x//2 - button_size.x//2, self.game_size.y//2 - button_size.y//2)
@@ -29,8 +29,8 @@ class Game:
     self.render_objects = [main_button, upgrade_button, main_text]
     self.event_objects = [main_button, upgrade_button] 
     self.continuous_events = [self.counter]
+    self.button_count = 0
 
-  
   def draw_screen(self):
     '''Draw the screen, the order is important!'''
     self.screen.fill(Color.PURPLE)
@@ -41,11 +41,8 @@ class Game:
   def every_second_event(self):
     for event_object in self.continuous_events:
       event_object.handle_event() 
-    self.timer.incremented_second = False
 
-  def handle_frame(self): 
-    if self.timer.incremented_second:
-      self.every_second_event()
+  def handle_frame(self):
 
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
@@ -61,20 +58,11 @@ class Game:
 
   def run_game(self):
     self.running = True
-    
-    self.screen = pygame.display.set_mode(self.game_size)
-    self.clock = pygame.time.Clock()
-    self.timer_update = 0.0
+    self.screen = pygame.display.set_mode(self.game_size) 
 
     while self.running:
-      # TODO: Move this to Timer if possible
-      dt = self.clock.tick(60) / 1000.0
-      self.timer.single_second_timer += dt 
-      if self.timer.single_second_timer >= 1.0:
-        self.timer.single_second_timer = 0.0
-        self.timer.time += 1.0
-        self.timer.incremented_second = True
-        print(self.timer.time)
+      if self.timer.tick():
+        self.every_second_event()
       self.handle_frame()
       pygame.display.flip() 
 

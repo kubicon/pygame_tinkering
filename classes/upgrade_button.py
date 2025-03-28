@@ -5,7 +5,6 @@ from classes.counter import Counter
 
 class UpgradeButton(Button):
   def __init__(self, b_pos: XY, b_size: XY, text: str, cost: int, counter: Counter):
-
     self.cost = cost
     self.counter = counter
     self.color, self.hover_color = self.get_colors() 
@@ -24,7 +23,8 @@ class UpgradeButton(Button):
       self.counter.decrease(self.cost)
       self.cost += 10
       self.text = f"{self.upgrade_name} ({self.cost})"
-    
+      
+      
     
   def render(self, surface):
     self.color, self.hover_color = self.get_colors()
